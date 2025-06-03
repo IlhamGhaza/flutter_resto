@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import '../models/restaurant.dart';
 import '../services/api_service.dart';
@@ -29,6 +31,7 @@ class RestaurantProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       _message = e.toString();
+      debugPrint(message);
       notifyListeners();
     }
   }
@@ -44,6 +47,7 @@ class RestaurantProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       _message = e.toString();
+      debugPrint(message);
       notifyListeners();
     }
   }
@@ -59,6 +63,7 @@ class RestaurantProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       _message = e.toString();
+      debugPrint(message);
       notifyListeners();
     }
   }
@@ -74,6 +79,7 @@ class RestaurantProvider extends ChangeNotifier {
     } catch (e) {
       _state = ResultState.error;
       _message = e.toString();
+      debugPrint(message);
       notifyListeners();
     }
   }
