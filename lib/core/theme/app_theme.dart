@@ -5,7 +5,7 @@ class AppTheme {
   static const _primaryColor = Color(0xFF1A73E8);
   static const _secondaryColor = Color(0xFF34A853);
   static const _errorColor = Color(0xFFEA4335);
-  static final String? _poppinsFontFamily = GoogleFonts.poppins().fontFamily;
+  static final _poppinsFontFamily = GoogleFonts.poppins().fontFamily;
 
   static final CardThemeData _commonCardTheme = CardThemeData(
     elevation: 2,

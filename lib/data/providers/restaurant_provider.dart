@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import '../models/restaurant.dart';
 import '../services/api_service.dart';

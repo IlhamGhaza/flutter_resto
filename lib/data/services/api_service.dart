@@ -1,17 +1,13 @@
 import 'dart:convert';
+import 'package:flutter_resto/core/variabeles.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import '../models/restaurant.dart';
 
 class ApiService {
-  static const String _baseUrl = 'https://restaurant-api.dicoding.dev';
-
   Future<List<Restaurant>> getRestaurants() async {
     try {
-      final response = await http.get(Uri.parse('$_baseUrl/list'));
-
-      // debugPrint('Response status: ${response.statusCode}');
-      // debugPrint('Response body: ${response.body}');
+      final response = await http.get(Uri.parse('${Variables.baseUrl}/list'));
 
       if (response.statusCode == 200) {
         final responseBody = response.body;
@@ -21,7 +17,6 @@ class ApiService {
 
         final Map<String, dynamic> data = json.decode(responseBody);
 
-        // Check if restaurants key exists and is not null
         if (data['restaurants'] == null) {
           throw Exception('Restaurants data is null');
         }
@@ -56,7 +51,9 @@ class ApiService {
 
   Future<Restaurant> getRestaurantDetail(String id) async {
     try {
-      final response = await http.get(Uri.parse('$_baseUrl/detail/$id'));
+      final response = await http.get(
+        Uri.parse('${Variables.baseUrl}/detail/$id'),
+      );
 
       debugPrint('Detail response status: ${response.statusCode}');
       debugPrint('Detail response body: ${response.body}');
@@ -69,7 +66,6 @@ class ApiService {
 
         final Map<String, dynamic> data = json.decode(responseBody);
 
-        // Check if restaurant key exists and is not null
         if (data['restaurant'] == null) {
           throw Exception('Restaurant data is null');
         }
@@ -88,7 +84,9 @@ class ApiService {
 
   Future<List<Restaurant>> searchRestaurants(String query) async {
     try {
-      final response = await http.get(Uri.parse('$_baseUrl/search?q=$query'));
+      final response = await http.get(
+        Uri.parse('${Variables.baseUrl}/search?q=$query'),
+      );
 
       debugPrint('Search response status: ${response.statusCode}');
       debugPrint('Search response body: ${response.body}');
@@ -101,7 +99,6 @@ class ApiService {
 
         final Map<String, dynamic> data = json.decode(responseBody);
 
-        // Check if restaurants key exists and is not null
         if (data['restaurants'] == null) {
           throw Exception('Search results are null');
         }
@@ -141,7 +138,7 @@ class ApiService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/review'),
+        Uri.parse('${Variables.baseUrl}/review'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'id': id, 'name': name, 'review': review}),
       );

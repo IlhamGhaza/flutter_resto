@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Restaurant {
   final String id;
   final String name;
@@ -56,8 +55,9 @@ class Restaurant {
     );
   }
 
-  String get imageUrl =>
-      'https://restaurant-api.dicoding.dev/images/medium/$pictureId';
+  String get imageUrl {
+    return 'https://restaurant-api.dicoding.dev/images/medium/$pictureId';
+  }
 }
 
 class Menu {

@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Consumer<RestaurantProvider>(
-        builder: (context, provider, child) {
+        builder: (_, provider, _) {
           if (provider.state == ResultState.loading) {
             return const Center(child: CircularProgressIndicator());
           } else if (provider.state == ResultState.error) {

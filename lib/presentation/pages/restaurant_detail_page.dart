@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/providers/restaurant_provider.dart';
-import '../../data/models/restaurant.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId;
@@ -180,7 +179,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Restaurant Name and Rating
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -206,7 +204,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Location (City and Address)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -238,7 +235,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ],
                         ),
 
-                        // Categories
                         if (restaurant.categories.isNotEmpty) ...[
                           const SizedBox(height: 16),
                           Text(
@@ -263,7 +259,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
                         const SizedBox(height: 16),
 
-                        // Description
                         Text(
                           'Description',
                           style: Theme.of(context).textTheme.titleLarge,
@@ -272,14 +267,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         Text(restaurant.description),
                         const SizedBox(height: 24),
 
-                        // Menu Section
                         Text(
                           'Menu',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 16),
 
-                        // Foods
                         Text(
                           'Foods',
                           style: Theme.of(context).textTheme.titleMedium,
@@ -293,7 +286,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Drinks
                         Text(
                           'Drinks',
                           style: Theme.of(context).textTheme.titleMedium,
@@ -307,7 +299,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         ),
                         const SizedBox(height: 24),
 
-                        // Customer Reviews
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -324,7 +315,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Reviews List
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
