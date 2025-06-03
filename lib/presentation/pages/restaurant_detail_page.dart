@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/providers/restaurant_provider.dart';
+import '../../core/utils/snackbar_utils.dart';
 import '../../data/models/restaurant.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
@@ -39,7 +40,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   void _showReviewDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Add Review'),
         content: Form(
           key: _formKey,
@@ -83,19 +84,42 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                Provider.of<RestaurantProvider>(
-                  context,
+                final pageContextForSnackbar = this.context;
+
+                final provider = Provider.of<RestaurantProvider>(
+                  dialogContext,
                   listen: false,
-                ).addReview(
+                );
+
+                final navigator = Navigator.of(dialogContext);
+
+                await provider.addReview(
                   id: widget.restaurantId,
                   name: _nameController.text,
                   review: _reviewController.text,
                 );
-                _nameController.clear();
-                _reviewController.clear();
-                Navigator.pop(context);
+
+                navigator.pop();
+
+                if (provider.state == ResultState.hasData) {
+                  _nameController.clear();
+                  _reviewController.clear();
+                  SnackbarUtils(
+                    text: 'Review added successfully!',
+                    backgroundColor: Colors.green,
+                  ).showSuccessSnackBar(pageContextForSnackbar);
+                } else if (provider.state == ResultState.error) {
+                  SnackbarUtils(
+                    text: provider.message.isNotEmpty
+                        ? provider.message
+                        : 'Failed to add review.',
+                    backgroundColor: Theme.of(
+                      pageContextForSnackbar,
+                    ).colorScheme.error,
+                  ).showErrorSnackBar(pageContextForSnackbar);
+                }
               }
             },
             child: const Text('Submit'),
@@ -130,7 +154,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               ),
             );
           } else if (provider.selectedRestaurant == null) {
-            // Add this check to handle null selectedRestaurant
             return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -248,9 +271,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Customer Reviews',
-                              style: Theme.of(context).textTheme.titleLarge,
+                            Expanded(
+                              child: Text(
+                                'Customer Reviews',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
                             ),
                             TextButton.icon(
                               onPressed: _showReviewDialog,
