@@ -10,8 +10,8 @@ class ApiService {
     try {
       final response = await http.get(Uri.parse('$_baseUrl/list'));
 
-      debugPrint('Response status: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
+      // debugPrint('Response status: ${response.statusCode}');
+      // debugPrint('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseBody = response.body;

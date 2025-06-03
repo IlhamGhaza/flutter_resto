@@ -1,11 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Restaurant {
   final String id;
   final String name;
   final String description;
   final String pictureId;
   final String city;
+  final String address;
   final double rating;
   final Menu? menus; // Made nullable
+  final List<Category> categories;
   final List<Review> customerReviews;
 
   Restaurant({
@@ -14,8 +17,10 @@ class Restaurant {
     required this.description,
     required this.pictureId,
     required this.city,
+    required this.address,
     required this.rating,
-    this.menus, // Now nullable
+    this.menus,
+    required this.categories,
     required this.customerReviews,
   });
 
@@ -26,11 +31,20 @@ class Restaurant {
       description: json['description'] as String? ?? '',
       pictureId: json['pictureId'] as String? ?? '',
       city: json['city'] as String? ?? '',
+      address: json['address'] as String? ?? '',
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       // Add null check for menus
       menus: json['menus'] != null
           ? Menu.fromJson(json['menus'] as Map<String, dynamic>)
           : null,
+      categories:
+          (json['categories'] as List?)
+              ?.map(
+                (category) =>
+                    Category.fromJson(category as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
       // Add null check for customerReviews
       customerReviews: json['customerReviews'] != null
           ? (json['customerReviews'] as List)
@@ -78,6 +92,16 @@ class MenuItem {
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
     return MenuItem(name: json['name'] as String? ?? '');
+  }
+}
+
+class Category {
+  final String name;
+
+  Category({required this.name});
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(name: json['name'] as String);
   }
 }
 

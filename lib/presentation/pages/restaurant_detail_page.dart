@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/providers/restaurant_provider.dart';
-import '../../core/utils/snackbar_utils.dart';
 import '../../data/models/restaurant.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
@@ -40,7 +39,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   void _showReviewDialog() {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text('Add Review'),
         content: Form(
           key: _formKey,
@@ -84,42 +83,19 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: () {
               if (_formKey.currentState!.validate()) {
-                final pageContextForSnackbar = this.context;
-
-                final provider = Provider.of<RestaurantProvider>(
-                  dialogContext,
+                Provider.of<RestaurantProvider>(
+                  context,
                   listen: false,
-                );
-
-                final navigator = Navigator.of(dialogContext);
-
-                await provider.addReview(
+                ).addReview(
                   id: widget.restaurantId,
                   name: _nameController.text,
                   review: _reviewController.text,
                 );
-
-                navigator.pop();
-
-                if (provider.state == ResultState.hasData) {
-                  _nameController.clear();
-                  _reviewController.clear();
-                  SnackbarUtils(
-                    text: 'Review added successfully!',
-                    backgroundColor: Colors.green,
-                  ).showSuccessSnackBar(pageContextForSnackbar);
-                } else if (provider.state == ResultState.error) {
-                  SnackbarUtils(
-                    text: provider.message.isNotEmpty
-                        ? provider.message
-                        : 'Failed to add review.',
-                    backgroundColor: Theme.of(
-                      pageContextForSnackbar,
-                    ).colorScheme.error,
-                  ).showErrorSnackBar(pageContextForSnackbar);
-                }
+                _nameController.clear();
+                _reviewController.clear();
+                Navigator.pop(context);
               }
             },
             child: const Text('Submit'),
@@ -143,7 +119,14 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 children: [
                   const Icon(Icons.error_outline, size: 48, color: Colors.red),
                   const SizedBox(height: 16),
-                  Text(provider.message),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      provider.message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () =>
@@ -197,6 +180,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Restaurant Name and Rating
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -221,17 +205,65 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
+
+                        // Location (City and Address)
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Icon(Icons.location_on),
                             const SizedBox(width: 8),
-                            Text(
-                              restaurant.city,
-                              style: Theme.of(context).textTheme.titleMedium,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    restaurant.city,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
+                                  ),
+                                  if (restaurant.address.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      restaurant.address,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(color: Colors.grey[600]),
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
+
+                        // Categories
+                        if (restaurant.categories.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Text(
+                            'Categories',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            children: restaurant.categories
+                                .map(
+                                  (category) => Chip(
+                                    label: Text(category.name),
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).primaryColor.withOpacity(0.1),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ],
+
                         const SizedBox(height: 16),
+
+                        // Description
                         Text(
                           'Description',
                           style: Theme.of(context).textTheme.titleLarge,
@@ -239,11 +271,15 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         const SizedBox(height: 8),
                         Text(restaurant.description),
                         const SizedBox(height: 24),
+
+                        // Menu Section
                         Text(
                           'Menu',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 16),
+
+                        // Foods
                         Text(
                           'Foods',
                           style: Theme.of(context).textTheme.titleMedium,
@@ -256,6 +292,8 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                               .toList(),
                         ),
                         const SizedBox(height: 16),
+
+                        // Drinks
                         Text(
                           'Drinks',
                           style: Theme.of(context).textTheme.titleMedium,
@@ -268,14 +306,14 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                               .toList(),
                         ),
                         const SizedBox(height: 24),
+
+                        // Customer Reviews
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              child: Text(
-                                'Customer Reviews',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
+                            Text(
+                              'Customer Reviews',
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
                             TextButton.icon(
                               onPressed: _showReviewDialog,
@@ -285,6 +323,8 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
+
+                        // Reviews List
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
