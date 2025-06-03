@@ -129,6 +129,18 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 ],
               ),
             );
+          } else if (provider.selectedRestaurant == null) {
+            // Add this check to handle null selectedRestaurant
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.restaurant, size: 48, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text('Restaurant not found'),
+                ],
+              ),
+            );
           } else {
             final restaurant = provider.selectedRestaurant!;
             return CustomScrollView(
@@ -216,7 +228,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         const SizedBox(height: 8),
                         Wrap(
                           spacing: 8,
-                          children: restaurant.menus.foods
+                          children: restaurant.menus!.foods
                               .map((food) => Chip(label: Text(food.name)))
                               .toList(),
                         ),
@@ -228,7 +240,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         const SizedBox(height: 8),
                         Wrap(
                           spacing: 8,
-                          children: restaurant.menus.drinks
+                          children: restaurant.menus!.drinks
                               .map((drink) => Chip(label: Text(drink.name)))
                               .toList(),
                         ),

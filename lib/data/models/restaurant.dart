@@ -5,7 +5,7 @@ class Restaurant {
   final String pictureId;
   final String city;
   final double rating;
-  final Menu menus;
+  final Menu? menus; // Made nullable
   final List<Review> customerReviews;
 
   Restaurant({
@@ -15,22 +15,30 @@ class Restaurant {
     required this.pictureId,
     required this.city,
     required this.rating,
-    required this.menus,
+    this.menus, // Now nullable
     required this.customerReviews,
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     return Restaurant(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      pictureId: json['pictureId'] as String,
-      city: json['city'] as String,
-      rating: (json['rating'] as num).toDouble(),
-      menus: Menu.fromJson(json['menus'] as Map<String, dynamic>),
-      customerReviews: (json['customerReviews'] as List)
-          .map((review) => Review.fromJson(review as Map<String, dynamic>))
-          .toList(),
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      pictureId: json['pictureId'] as String? ?? '',
+      city: json['city'] as String? ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      // Add null check for menus
+      menus: json['menus'] != null
+          ? Menu.fromJson(json['menus'] as Map<String, dynamic>)
+          : null,
+      // Add null check for customerReviews
+      customerReviews: json['customerReviews'] != null
+          ? (json['customerReviews'] as List)
+                .map(
+                  (review) => Review.fromJson(review as Map<String, dynamic>),
+                )
+                .toList()
+          : [],
     );
   }
 
@@ -46,12 +54,19 @@ class Menu {
 
   factory Menu.fromJson(Map<String, dynamic> json) {
     return Menu(
-      foods: (json['foods'] as List)
-          .map((food) => MenuItem.fromJson(food as Map<String, dynamic>))
-          .toList(),
-      drinks: (json['drinks'] as List)
-          .map((drink) => MenuItem.fromJson(drink as Map<String, dynamic>))
-          .toList(),
+      // Add null checks for foods and drinks arrays
+      foods: json['foods'] != null
+          ? (json['foods'] as List)
+                .map((food) => MenuItem.fromJson(food as Map<String, dynamic>))
+                .toList()
+          : [],
+      drinks: json['drinks'] != null
+          ? (json['drinks'] as List)
+                .map(
+                  (drink) => MenuItem.fromJson(drink as Map<String, dynamic>),
+                )
+                .toList()
+          : [],
     );
   }
 }
@@ -62,7 +77,7 @@ class MenuItem {
   MenuItem({required this.name});
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
-    return MenuItem(name: json['name'] as String);
+    return MenuItem(name: json['name'] as String? ?? '');
   }
 }
 
@@ -75,9 +90,9 @@ class Review {
 
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
-      name: json['name'] as String,
-      review: json['review'] as String,
-      date: json['date'] as String,
+      name: json['name'] as String? ?? '',
+      review: json['review'] as String? ?? '',
+      date: json['date'] as String? ?? '',
     );
   }
 }
