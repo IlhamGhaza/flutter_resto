@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/providers/restaurant_provider.dart';
+import '../widgets/adaptive_navigation.dart';
+import '../widgets/restaurant_card.dart';
 import 'restaurant_detail_page.dart';
 import 'search_page.dart';
-import '../widgets/restaurant_card.dart';
+import 'favorites_page.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +16,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -24,8 +29,26 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void _onDestinationSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildRestaurantList();
+      case 1:
+        return const FavoritesPage();
+      case 2:
+        return const SettingsPage();
+      default:
+        return _buildRestaurantList();
+    }
+  }
+
+  Widget _buildRestaurantList() {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Restaurant App'),
@@ -112,6 +135,15 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveScaffold(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: _onDestinationSelected,
+      body: _buildBody(),
     );
   }
 }

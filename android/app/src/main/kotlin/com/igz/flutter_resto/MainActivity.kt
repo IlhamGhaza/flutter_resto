@@ -1,4 +1,4 @@
-package com.example.flutter_resto
+package com.igz.flutter_resto
 
 import io.flutter.embedding.android.FlutterActivity
 

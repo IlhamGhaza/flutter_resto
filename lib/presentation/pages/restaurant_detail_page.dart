@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/providers/restaurant_provider.dart';
+import '../../data/providers/favorite_provider.dart';
+import '../../data/models/restaurant.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId;
@@ -16,16 +18,26 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   final _nameController = TextEditingController();
   final _reviewController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isFavorite = false;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => Provider.of<RestaurantProvider>(
+    Future.microtask(() async {
+      await Provider.of<RestaurantProvider>(
         context,
         listen: false,
-      ).fetchRestaurantDetail(widget.restaurantId),
-    );
+      ).fetchRestaurantDetail(widget.restaurantId);
+
+      final isFavorite = await Provider.of<FavoriteProvider>(
+        context,
+        listen: false,
+      ).isFavorite(widget.restaurantId);
+
+      setState(() {
+        _isFavorite = isFavorite;
+      });
+    });
   }
 
   @override
@@ -33,6 +45,30 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     _nameController.dispose();
     _reviewController.dispose();
     super.dispose();
+  }
+
+  void _toggleFavorite() async {
+    final restaurant = Provider.of<RestaurantProvider>(
+      context,
+      listen: false,
+    ).selectedRestaurant;
+
+    if (restaurant != null) {
+      final favoriteProvider = Provider.of<FavoriteProvider>(
+        context,
+        listen: false,
+      );
+
+      if (_isFavorite) {
+        await favoriteProvider.removeFavorite(restaurant.id);
+      } else {
+        await favoriteProvider.addFavorite(restaurant);
+      }
+
+      setState(() {
+        _isFavorite = !_isFavorite;
+      });
+    }
   }
 
   void _showReviewDialog() {
@@ -153,6 +189,15 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 SliverAppBar(
                   expandedHeight: 300,
                   pinned: true,
+                  actions: [
+                    IconButton(
+                      icon: Icon(
+                        _isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: _isFavorite ? Colors.red : null,
+                      ),
+                      onPressed: _toggleFavorite,
+                    ),
+                  ],
                   flexibleSpace: FlexibleSpaceBar(
                     background: Hero(
                       tag: 'restaurant-${restaurant.id}',
