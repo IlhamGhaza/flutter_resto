@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../pages/home_page.dart';
-import '../pages/favorites_page.dart';
-import '../pages/settings_page.dart';
+
 
 class AdaptiveNavigation extends StatelessWidget {
   final int selectedIndex;

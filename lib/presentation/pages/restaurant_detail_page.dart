@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/providers/restaurant_provider.dart';
 import '../../data/providers/favorite_provider.dart';
-import '../../data/models/restaurant.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId;
