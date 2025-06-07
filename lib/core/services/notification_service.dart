@@ -2,6 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -15,6 +16,7 @@ class NotificationService {
 
   Future<void> initialize() async {
     tz.initializeTimeZones();
+    await requestNotificationPermissions();
 
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
@@ -40,15 +42,27 @@ class NotificationService {
 
     await _notifications.initialize(initSettings);
 
-    // Conditionally initialize workmanager for supported platforms
+    
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
       await _workmanager.initialize(callbackDispatcher);
     }
   }
 
+  Future<void> requestNotificationPermissions() async {
+    final status = await Permission.notification.request();
+    if (status.isGranted) {
+      
+    } else if (status.isDenied) {
+      
+    } else if (status.isPermanentlyDenied) {
+      
+      await openAppSettings();
+    }
+  }
+
   Future<void> scheduleDailyReminder() async {
-    // Conditionally schedule tasks for supported platforms
+    
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
       await _workmanager.registerPeriodicTask(
