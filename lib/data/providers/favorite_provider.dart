@@ -7,6 +7,10 @@ class FavoriteProvider extends ChangeNotifier {
   List<Restaurant> _favorites = [];
   bool _isLoading = false;
 
+  FavoriteProvider() {
+    loadFavorites();
+  }
+
   List<Restaurant> get favorites => _favorites;
   bool get isLoading => _isLoading;
 
@@ -44,6 +48,10 @@ class FavoriteProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error removing favorite: $e');
     }
+  }
+
+  bool isRestaurantFavorite(String id) {
+    return _favorites.any((restaurant) => restaurant.id == id);
   }
 
   Future<bool> isFavorite(String id) async {

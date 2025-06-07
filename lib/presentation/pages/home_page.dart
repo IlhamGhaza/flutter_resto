@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/providers/navigation_provider.dart';
 import '../../data/providers/restaurant_provider.dart';
 import '../widgets/adaptive_navigation.dart';
 import '../widgets/restaurant_card.dart';
@@ -16,27 +17,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(
-      () => Provider.of<RestaurantProvider>(
-        context,
-        listen: false,
-      ).fetchRestaurants(),
-    );
-  }
-
-  void _onDestinationSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  Widget _buildBody() {
-    switch (_selectedIndex) {
+  Widget _buildCurrentPage(int currentIndex) {
+    switch (currentIndex) {
       case 0:
         return _buildRestaurantList();
       case 1:
@@ -47,7 +30,16 @@ class _HomePageState extends State<HomePage> {
         return _buildRestaurantList();
     }
   }
-
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<RestaurantProvider>(
+        context,
+        listen: false,
+      ).fetchRestaurants();
+    });
+  }
   Widget _buildRestaurantList() {
     return Scaffold(
       appBar: AppBar(
@@ -140,10 +132,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final navProvider = context.watch<NavigationProvider>();
+
     return AdaptiveScaffold(
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: _onDestinationSelected,
-      body: _buildBody(),
+      selectedIndex: navProvider.selectedIndex,
+      onDestinationSelected: (index) {
+        context.read<NavigationProvider>().onDestinationSelected(index);
+      },
+      body: _buildCurrentPage(navProvider.selectedIndex),
     );
   }
 }

@@ -17,7 +17,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   final _nameController = TextEditingController();
   final _reviewController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isFavorite = false;
 
   @override
   void initState() {
@@ -27,15 +26,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         context,
         listen: false,
       ).fetchRestaurantDetail(widget.restaurantId);
-
-      final isFavorite = await Provider.of<FavoriteProvider>(
-        context,
-        listen: false,
-      ).isFavorite(widget.restaurantId);
-
-      setState(() {
-        _isFavorite = isFavorite;
-      });
     });
   }
 
@@ -47,10 +37,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   }
 
   void _toggleFavorite() async {
-    final restaurant = Provider.of<RestaurantProvider>(
+    final restaurantProvider = Provider.of<RestaurantProvider>(
       context,
       listen: false,
-    ).selectedRestaurant;
+    );
+    final restaurant = restaurantProvider.selectedRestaurant;
 
     if (restaurant != null) {
       final favoriteProvider = Provider.of<FavoriteProvider>(
@@ -58,15 +49,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         listen: false,
       );
 
-      if (_isFavorite) {
+      if (favoriteProvider.isRestaurantFavorite(restaurant.id)) {
         await favoriteProvider.removeFavorite(restaurant.id);
       } else {
         await favoriteProvider.addFavorite(restaurant);
       }
-
-      setState(() {
-        _isFavorite = !_isFavorite;
-      });
     }
   }
 
@@ -189,12 +176,20 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   expandedHeight: 300,
                   pinned: true,
                   actions: [
-                    IconButton(
-                      icon: Icon(
-                        _isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: _isFavorite ? Colors.red : null,
-                      ),
-                      onPressed: _toggleFavorite,
+                    Consumer<FavoriteProvider>(
+                      builder: (context, favoriteProvider, child) {
+                        bool isCurrentlyFavorite = favoriteProvider
+                            .isRestaurantFavorite(restaurant.id);
+                        return IconButton(
+                          icon: Icon(
+                            isCurrentlyFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: isCurrentlyFavorite ? Colors.red : null,
+                          ),
+                          onPressed: _toggleFavorite,
+                        );
+                      },
                     ),
                   ],
                   flexibleSpace: FlexibleSpaceBar(

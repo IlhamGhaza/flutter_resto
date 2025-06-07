@@ -12,14 +12,10 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(
-      () =>
-          Provider.of<FavoriteProvider>(context, listen: false).loadFavorites(),
-    );
-  }
+  
+  
+  
+  
 
   @override
   Widget build(BuildContext context) {
